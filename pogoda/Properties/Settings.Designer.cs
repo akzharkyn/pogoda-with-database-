@@ -36,7 +36,7 @@ namespace pogoda.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("SELECT*FROM Table")]
+        [global::System.Configuration.DefaultSettingValueAttribute("SELECT*FROM [dbo].[Table]")]
         public string SQL {
             get {
                 return ((string)(this["SQL"]));

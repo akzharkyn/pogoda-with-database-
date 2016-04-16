@@ -13,7 +13,15 @@ namespace pogoda
 {
     public partial class Form1 : Form
     {
+        Class1 objConnect; //object togo classa,
 
+        string conString; //to hold our connection string from the Setting page we set up earlier
+
+        DataSet ds; //contains rows, which correspond to a row in the database table
+        DataRow dRow; //
+
+
+        int inc = 0;//will be used to move from one record to another, and back again
 
         public Form1()
         {
@@ -34,59 +42,88 @@ namespace pogoda
             {
                 if (c.GetType() == typeof(Label))
                 {
-                    string name = c.Name;
-                    //if(city.ContainsKey(name))
-                    //{
-                    //    name = city[name];
-                    //}
-                    name= name.Split('_')[1].ToLower();
-                    //MessageBox.Show(c.Name.Split('_')[1]);
-                    //string name = c.Name.Split('_')[1].ToLower();
-                    string url = string.Format("http://www.kazhydromet.kz/rss-pogoda.php?id={0}", name);
-                    XmlReader reader = XmlReader.Create(url);
-
-
-                    SyndicationFeed feed = SyndicationFeed.Load(reader);
-
-                    reader.Close();
-
-                    if (feed.Items.Count() > 0)
+                    try
                     {
-                        string text = feed.Items.ElementAt(0).Summary.Text;
-
-                        string[] arr = text.Split(new string[] { "<br>" }, StringSplitOptions.RemoveEmptyEntries);
-
-                        if (arr.Length >= 4)
-                        {
-                            for (int i = 0; i < arr.Length; ++i)
-                            {
-                                arr[i] = arr[i].Trim();
-                            }
-
-                            data[name] = arr;
-                        }
-                        c.Text = data[name][0];
-
-                        if(label_Ustkamenogorsk.Text=="oskemen")
+                        if (label_Ustkamenogorsk.Text == "oskemen")
                         {
                             label_Ustkamenogorsk.Name = "label_Ust-kamenogorsk";
                         }
-                       
+                        string name = c.Name;
+                        name = name.Split('_')[1].ToLower();
 
+                        string url = string.Format("http://www.kazhydromet.kz/rss-pogoda.php?id={0}", name);
+                        XmlReader reader = XmlReader.Create(url);
+
+
+                        SyndicationFeed feed = SyndicationFeed.Load(reader);
+
+                        reader.Close();
+
+                        if (feed.Items.Count() > 0)
+                        {
+                            string text = feed.Items.ElementAt(0).Summary.Text;
+
+                            string[] arr = text.Split(new string[] { "<br>" }, StringSplitOptions.RemoveEmptyEntries);
+
+                            if (arr.Length >= 4)
+                            {
+                                for (int i = 0; i < arr.Length; ++i)
+                                {
+                                    arr[i] = arr[i].Trim();
+                                }
+
+                                data[name] = arr;
+                            }
+                        }
+                        c.Text = data[name][0];
+
+                        inc = 0;
+                        DataRow row = ds.Tables[0].Rows[inc];
+                        string string_table = ds.Tables[0].Rows[inc].ItemArray.GetValue(0).ToString();
+                        if (string_table == name)
+                        {
+                            row[1] = data[name][0];
+                            ds.Tables[0].Rows.Add(row);
+                        }
+
+                        inc++;
                     }
+                    catch (Exception ee)
+                    {
+                        inc = 0;
+                        
+                        dRow = ds.Tables[0].Rows[1];
+                        inc++;
 
+                        c.Text = dRow.ItemArray.GetValue(inc).ToString();
+                    }
                 }
             }
-        }
-
-        private void label_Karaganda_Click(object sender, EventArgs e)
-        {
-
+            objConnect.UpdateDatabase(ds);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            objConnect = new Class1();
+            conString = Properties.Settings.Default.Database1ConnectionString;
+            objConnect.connection_string = conString;
+            objConnect.Sql = Properties.Settings.Default.SQL;
 
+            ds = objConnect.GetConnection;
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

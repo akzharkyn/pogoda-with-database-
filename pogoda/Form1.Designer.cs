@@ -117,7 +117,6 @@
             this.label_Karaganda.Size = new System.Drawing.Size(180, 33);
             this.label_Karaganda.TabIndex = 8;
             this.label_Karaganda.Text = "karagandy";
-            this.label_Karaganda.Click += new System.EventHandler(this.label_Karaganda_Click);
             // 
             // label_Kokshetau
             // 
